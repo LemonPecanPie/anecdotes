@@ -4,12 +4,43 @@ function getRandInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-const Button = ({onClick, text}) => {
+function indexOfMax(arr) {
+  if (arr.length === 0) {
+    return -1;
+  }
+  let max = arr[0];
+  let maxIndex = 0;
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+  }
+  return maxIndex;
+}
+
+const Header = ({ text }) => {
+  return (
+    <>
+      <h1>{text}</h1>
+    </>
+  )
+}
+
+const Stat = ({ numVotes }) => {
+  return (
+    <>
+      <p>has {numVotes} votes</p>
+    </>
+  )
+}
+
+const Button = ({ onClick, text }) => {
   return (
     <div>
-    <button onClick={onClick}>
-      {text}
-    </button>
+      <button onClick={onClick}>
+        {text}
+      </button>
     </div>
   );
 }
@@ -27,11 +58,29 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0);
+  const [votesArray, setVotesArray] = useState(new Uint8Array(anecdotes.length));
+
+  const setToVotesArray = (votesArray) => {
+    console.log('votesArray:', votesArray);
+    const copy = [...votesArray];
+    copy[selected]++;
+    console.log('copy:', copy);
+    setVotesArray(copy);
+  };
+
+  let idxOfMax = indexOfMax(votesArray);
 
   return (
     <div>
+      <Header text='Anecdote of the day' />
       {anecdotes[selected]}
-      <Button onClick={() =>setSelected(getRandInt(anecdotes.length))} text='next anecdote'/>
+      <Stat numVotes={votesArray[selected]} />
+      {/* {console.log('in return:', votesArray)} */}
+      <Button onClick={() => setToVotesArray(votesArray)} text={'vote'} />
+      <Button onClick={() => setSelected(getRandInt(anecdotes.length))} text='next anecdote' />
+      <Header text='Anecdote with most votes' />
+      {anecdotes[idxOfMax]}
+      <Stat numVotes={(votesArray[idxOfMax])} />
     </div>
   )
 }
